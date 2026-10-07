@@ -27,15 +27,19 @@ M.search_log_content = function()
             fzf_mappings.toggle_entry_value()
         ),
     }
-
     require("fzf-lua").fzf_live(function(query)
+        if type(query) == "table" then
+            query = query[1]
+        end
+
+        query = query or ""
+
         return fzf_finders.git_log_content_finder(query, nil)
     end, opts)
 end
 
 M.search_log_content_file = function()
     local bufnr = vim.fn.bufnr()
-
     local opts = {
         prompt = "Log> ",
         exec_empty_query = true,
@@ -58,8 +62,13 @@ M.search_log_content_file = function()
             fzf_mappings.toggle_entry_value()
         ),
     }
-
     require("fzf-lua").fzf_live(function(query)
+        if type(query) == "table" then
+            query = query[1]
+        end
+
+        query = query or ""
+
         return fzf_finders.git_log_content_finder(query, bufnr)
     end, opts)
 end
@@ -77,7 +86,6 @@ M.diff_commit_line = function()
         )
         return
     end
-
     local opts = {
         prompt = "Commit message> ",
         exec_empty_query = true,
@@ -97,15 +105,24 @@ M.diff_commit_line = function()
             fzf_mappings.toggle_entry_value()
         ),
     }
-
     require("fzf-lua").fzf_live(function(query)
-        return fzf_finders.git_log_location_finder(query, bufnr, s_start, s_end)
+        if type(query) == "table" then
+            query = query[1]
+        end
+
+        query = query or ""
+
+        return fzf_finders.git_log_location_finder(
+            query,
+            bufnr,
+            s_start,
+            s_end
+        )
     end, opts)
 end
 
 M.diff_commit_file = function()
     local bufnr = vim.fn.bufnr()
-
     local opts = {
         prompt = "Commit message> ",
         exec_empty_query = true,
@@ -125,15 +142,19 @@ M.diff_commit_file = function()
             fzf_mappings.toggle_entry_value()
         ),
     }
-
     require("fzf-lua").fzf_live(function(query)
+        if type(query) == "table" then
+            query = query[1]
+        end
+
+        query = query or ""
+
         return fzf_finders.git_log_file_finder(query, bufnr)
     end, opts)
 end
 
 M.diff_branch_file = function()
     local bufnr = vim.fn.bufnr()
-
     local opts = {
         prompt = "Branch> ",
         func_async_callback = false,
@@ -149,7 +170,6 @@ M.diff_branch_file = function()
             fzf_mappings.copy_commit_hash()
         ),
     }
-
     require("fzf-lua").fzf_exec(
         table.concat(
             require("advanced_git_search.commands.find").git_branches({
@@ -169,7 +189,6 @@ M.changed_on_branch = function()
             ["--preview"] = fzf_previewers.git_diff_base_branch(),
         },
     }
-
     require("fzf-lua").fzf_exec(
         table.concat(
             require("advanced_git_search.commands.find").changed_on_branch(),
@@ -194,7 +213,6 @@ M.checkout_reflog = function()
             end,
         },
     }
-
     require("fzf-lua").fzf_exec(
         table.concat(require("advanced_git_search.commands.find").reflog(), " "),
         opts
@@ -211,12 +229,10 @@ M.show_custom_functions = function()
         actions = {
             ["default"] = function(selected)
                 local selection = selected[1]
-
                 global_picker.execute_git_function(selection, "fzf_lua")
             end,
         },
     }
-
     require("fzf-lua").fzf_exec(keys, opts)
 end
 
